@@ -1,0 +1,20 @@
+{
+   "compilerOptions": {
+      "target": "ES2022",
+      "module": "es2022",
+      "allowJs": true,
+      "strict": false,
+      "allowSyntheticDefaultImports": true,
+      "forceConsistentCasingInFileNames": true,
+      "moduleResolution": "NodeNext",
+      "jsx": "preserve",
+      "baseUrl": "./src",
+      "outDir": "./out",
+      "downlevelIteration": true
+   },
+   "include": ["web-worker.js", "tailwind.config.js", "**/*.ts", "**/*.tsx"],
+   "exclude": ["node_modules"],
+   "ts-node": {
+      "require": ["tsconfig-paths/register"]
+   }
+}

@@ -1,0 +1,13 @@
+input[type='radio'] {
+   height: 0.9rem;
+   width: 0.9rem;
+   margin-right: 0.3rem;
+}
+
+[type='radio']:checked {
+   appearance: none;
+   -webkit-appearance: none;
+   border: 0.2rem solid #fff;
+   background-color: var('--blue');
+   border-radius: 50%;
+}

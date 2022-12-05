@@ -1,0 +1,45 @@
+{
+   "env": {
+      "browser": true,
+      "es2021": true
+   },
+   "parser": "@typescript-eslint/parser",
+   "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "react-app",
+      "plugin:tailwindcss/recommended",
+      "prettier"
+   ],
+   "plugins": ["import", "prettier", "@typescript-eslint", "tailwindcss", "unused-imports"],
+   "rules": {
+      "semi": ["error", "always"],
+      "@typescript-eslint/explicit-member-accessibility": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "lines-between-class-members": "off",
+      "import/prefer-default-export": "off",
+      "tailwindcss/classnames-order": "warn",
+      "tailwindcss/enforces-negative-arbitrary-values": "warn",
+      "tailwindcss/enforces-shorthand": "warn",
+      "tailwindcss/migration-from-tailwind-2": "warn",
+      "tailwindcss/no-arbitrary-value": "off",
+      "tailwindcss/no-custom-classname": [
+         "warn",
+         { "whitelist": ["bg-main", "^(.*?)dark-blue", "^(.*?)blue", "text-md"] }
+      ],
+      "tailwindcss/no-contradicting-classname": "error",
+      "no-unused-vars": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "unused-imports/no-unused-imports": "warn",
+      "unused-imports/no-unused-vars": [
+         "warn",
+         {
+            "vars": "all",
+            "varsIgnorePattern": "^_",
+            "args": "after-used",
+            "argsIgnorePattern": "^_"
+         }
+      ]
+   }
+}

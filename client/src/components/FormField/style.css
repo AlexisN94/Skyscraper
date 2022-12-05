@@ -1,0 +1,19 @@
+input[type='text'] {
+   font-weight: 700;
+}
+
+[type='text']::placeholder {
+   font-weight: 600;
+}
+
+input[type='date']::placeholder {
+   font-weight: 100;
+}
+input[type='date'] {
+   font-weight: 700;
+}
+
+input:disabled {
+   color: gray;
+   background-color: gainsboro;
+}
