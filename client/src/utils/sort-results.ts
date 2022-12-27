@@ -9,6 +9,7 @@ export const enum SortOption {
    returnDate = 'ret_date_asc',
    stayDuration = 'nights_desc',
    avgFlightDuration = 'avg_duration_asc',
+   stops = 'stops_asc',
 }
 
 const getFlightByCategory = (ticketModel: TicketModel, activeCategory: FlightCategory) => {
@@ -58,6 +59,22 @@ const sortResults = (
                   (parseDuration(flightA.avgDuration) - parseDuration(flightB.avgDuration)) *
                   (sortAsc ? 1 : -1)
                );
+            }
+         });
+      case SortOption.stops:
+         return [...results].sort((a, b) => {
+            const flightA = getFlightByCategory(a, activeFlightCategory);
+            const flightB = getFlightByCategory(b, activeFlightCategory);
+            if (a.noFlights) {
+               return 1;
+            } else if (b.noFlights) {
+               return -1;
+            } else {
+               const flightA_stops =
+                  flightA.inboundSegment.stops.length + flightA.outboundSegment.stops.length;
+               const flightB_stops =
+                  flightB.inboundSegment.stops.length + flightB.outboundSegment.stops.length;
+               return (flightA_stops - flightB_stops) * (sortAsc ? 1 : -1);
             }
          });
    }
