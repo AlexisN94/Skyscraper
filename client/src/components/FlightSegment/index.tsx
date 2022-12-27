@@ -10,7 +10,9 @@ import { pluralize } from 'utils/string';
 const FlightSegment: FC<FlightPlan & FlightSegmentDetails> = (props) => {
    return (
       <div className="flex items-center w-full justify-between gap-2">
-         <div className={`font-medium text-gray-500 text-xs leading-5 whitespace-pre`}>
+         <div
+            className={`font-medium text-gray-500 text-xs leading-5 whitespace-pre mx-auto justify-center`}
+         >
             {props.airlines?.join(' +\n')}
          </div>
 
