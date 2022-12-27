@@ -75,11 +75,13 @@ const Ticket: FC<TicketProps> = ({ activeFlightCategory, className, ...ticketMod
                ) : (
                   <div className="text-sm">No flights</div>
                )}
-               <div className="font-normal text-[0.8rem] text-gray-600">
-                  {pluralize(ticketModel.nights, 'night')}
-               </div>
+               {!ticketModel.oneWay && (
+                  <div className="font-normal text-[0.8rem] text-gray-600">
+                     {pluralize(ticketModel.nights, 'night')}
+                  </div>
+               )}
             </div>
-            <button className="bg-blue hover:bg-dark-blue text-base gap-2 flex transition-all duration-150 items-center w-fit text-white rounded-md px-3 py-2">
+            <button className="bg-blue hover:bg-dark-blue text-md gap-2 flex transition-all duration-150 items-center w-fit text-white rounded-md px-2.5 py-1.5">
                <div>Open</div>
                <IoMdArrowRoundForward
                   color={tailwindConfig.theme.extend.colors['white']}
