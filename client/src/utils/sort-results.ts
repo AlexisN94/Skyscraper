@@ -34,7 +34,13 @@ const sortResults = (
          return [...results].sort((a, b) => {
             const flightA = getFlightByCategory(a, activeFlightCategory);
             const flightB = getFlightByCategory(b, activeFlightCategory);
-            return (flightA.price - flightB.price) * (sortAsc ? 1 : -1);
+            if (a.noFlights) {
+               return 1;
+            } else if (b.noFlights) {
+               return -1;
+            } else {
+               return (flightA.price - flightB.price) * (sortAsc ? 1 : -1);
+            }
          });
       case SortOption.departureDate:
          return [...results].sort(
