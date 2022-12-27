@@ -122,6 +122,7 @@ const ResultsPanel: FC<FlightResultsProps> = ({
                               <option value={SortOption.returnDate}>Return date</option>
                            )}
                            <option value={SortOption.stops}>Stops</option>
+                           <option value={SortOption.airlineCount}>Number of airlines</option>
                         </AutoResizableSelect>
                      </label>
                      <button onClick={() => setSortAsc((state) => !state)}>
