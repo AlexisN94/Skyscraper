@@ -8,7 +8,7 @@ const preparePage = async (req: Request, res: Response, next: NextFunction) => {
   res.locals.page = await scraper.preparePage(
     url,
     () => onCaptcha(req, res),
-    () => onError(res)
+    (e) => onError(res, e)
   );
 
   if (res.locals.page) next();
@@ -31,6 +31,7 @@ const onCaptcha = async (req: Request, res: Response) => {
   req.app.locals.doingCaptcha = false;
 };
 
-const onError = (res) => {
+const onError = (res, e) => {
+  console.log("e", e);
   res.status(500).json({ error: "Failed to prepare page" });
 };

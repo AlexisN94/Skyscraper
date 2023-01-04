@@ -1,5 +1,7 @@
+import FlightCategory from 'constants/flight-category';
 import useEnableDisable from 'hooks/use-enable-disable';
 import { useQueryState } from 'hooks/use-query-state';
+import { capitalize } from 'lodash';
 import FlightSearchParams from 'models/flight-search-params';
 import moment, { Moment } from 'moment';
 import React, { FC, FormEvent, useEffect, useState } from 'react';
@@ -33,6 +35,10 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
    const sliderHandler = useEnableDisable();
    const [departureDate, setDepartureDate] = useQueryState('departureDate', moment(), moment);
    const [returnDate, setReturnDate] = useQueryState<Moment>('returnDate', null, moment);
+   const [flightCategories, setFlightCategories] = useQueryState<FlightCategory[]>(
+      'flightCategories',
+      [FlightCategory.best, FlightCategory.fastest, FlightCategory.cheapest]
+   );
 
    useEffect(() => {
       if (oneWay) {
@@ -87,7 +93,16 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
             returnDate: moment(returnDate),
             minNights: minNights,
             maxNights: maxNights,
+            flightCategories,
          });
+      }
+   };
+
+   const onFlightCategoryChange = (flightCategory: FlightCategory) => {
+      if (flightCategories.includes(flightCategory)) {
+         setFlightCategories([...flightCategories].filter((it) => it !== flightCategory));
+      } else {
+         setFlightCategories([...flightCategories, flightCategory]);
       }
    };
 
@@ -191,7 +206,20 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
             />
          </div>
 
-         <div className={`flex w-full align-middle items-center h-full`}>
+         <div className={`flex w-full align-middle items-center h-full justify-between gap-5`}>
+            <fieldset className="grid grid-cols-2 gap-x-2 gap-y-1 w-full max-w-[250px]">
+               {Object.entries(FlightCategory).map((flightCategory) => (
+                  <label className="flex align-middle gap-1">
+                     <input
+                        type="checkbox"
+                        checked={flightCategories.includes(flightCategory[1])}
+                        onChange={(_) => onFlightCategoryChange(flightCategory[1])}
+                     />
+                     {capitalize(flightCategory[1])} flights
+                  </label>
+               ))}
+            </fieldset>
+
             <RangeSlider
                title="Stay duration"
                showSubtitle={returnDate !== null}
@@ -214,14 +242,14 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
                }}
                disableSwap
                valueLabelDisplay="on"
-               className="-translate-y-2"
+               className="flex -translate-y-2 w-full"
                sx={rangeSliderStyle}
             />
 
             <SearchButton
                searching={searching}
                type="submit"
-               className={`bg-blue flex ml-auto items-center self-end py-2 h-fit px-8 whitespace-nowrap rounded-sm text-base`}
+               className={`text-base bg-blue w-full justify-center lg:w-auto flex items-center py-2 h-fit px-8 whitespace-nowrap rounded-sm`}
             />
          </div>
 

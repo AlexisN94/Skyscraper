@@ -10,6 +10,7 @@ import sortResults, { SortOption } from 'utils/sort-results';
 import ResultsList from 'components/ResultsList/index';
 import AutoResizableSelect from 'components/ui/AutoResizableSelect';
 import Toggle from 'components/ui/Toggle';
+import { capitalize } from 'lodash';
 
 export type FlightResultsProps = {
    tickets: TicketModel[];
@@ -18,6 +19,7 @@ export type FlightResultsProps = {
    searchParams: FlightSearchParams;
    searching: boolean;
    doingCaptcha: boolean;
+   enabledFlightCategories: FlightCategory[]
 };
 
 const ResultsPanel: FC<FlightResultsProps> = ({
@@ -27,6 +29,7 @@ const ResultsPanel: FC<FlightResultsProps> = ({
    searchParams,
    searching,
    doingCaptcha,
+   enabledFlightCategories,
 }) => {
    const [progress, setProgress] = useState(0);
    const [sortBy, setSortBy] = useState(SortOption.price);
@@ -97,9 +100,9 @@ const ResultsPanel: FC<FlightResultsProps> = ({
                         className="no-select-arrow border-blue outline-blue cursor-pointer 
                         hover:outline outline-[0.5px] p-0.5 border rounded-xl focus:outline-none px-1.5"
                      >
-                        <option value={FlightCategory.cheapest}>Cheapest</option>
-                        <option value={FlightCategory.best}>Best</option>
-                        <option value={FlightCategory.fastest}>Fastest</option>
+                        {enabledFlightCategories.map(category => (
+                           <option value={category}>{capitalize(category)}</option>
+                        ))}
                      </AutoResizableSelect>
                   </label>
                   <div className="-mr-1 flex gap-2 items-center lg:mr-0">

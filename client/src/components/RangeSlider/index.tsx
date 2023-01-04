@@ -34,7 +34,7 @@ const RangeSlider = ({
                </span>
             )}
          </div>
-         <div className="flex items-center align-middle self-center gap-3 w-[280px]">
+         <div className="flex items-center align-middle self-center gap-3 w-full">
             <Slider value={value} {...sliderProps} />
          </div>
       </label>

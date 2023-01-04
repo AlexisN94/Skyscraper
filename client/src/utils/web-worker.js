@@ -6,10 +6,14 @@ export default () => {
       });
    }
 
-   async function tryGetFlights(flightURL, backendURL, triesLeft) {
+   async function tryGetFlights(flightURL, backendURL, flightCategories, triesLeft) {
       if (triesLeft === 0) throwError('Server error. Make sure it is running.');
       try {
-         const data = await fetch(backendURL + 'flights/?url=' + flightURL, {
+         const requestURL =
+            `${backendURL}flights/` +
+            `?url=${flightURL}` +
+            `&flightCategories=${JSON.stringify(flightCategories)}`;
+         const data = await fetch(requestURL, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -20,16 +24,16 @@ export default () => {
       } catch (e) {
          console.error(e);
          await new Promise((res) => setTimeout(res, 2000));
-         return await tryGetFlights(flightURL, backendURL, triesLeft - 1);
+         return await tryGetFlights(flightURL, backendURL, flightCategories, triesLeft - 1);
       }
    }
 
    self.onmessage = async (event) => {
-      const [flightURL, backendURL] = event.data;
+      const [flightURL, backendURL, flightCategories] = event.data;
       let data;
 
       while (!data) {
-         data = await tryGetFlights(flightURL, backendURL, 2);
+         data = await tryGetFlights(flightURL, backendURL, flightCategories, 2);
          if (!data) {
             await new Promise((res) => setTimeout(res, 500));
             continue;

@@ -1,6 +1,6 @@
 import getFlights from "./routes/flights";
 import checkConnection from "./middleware/check-connection";
-import checkFlightUrl from "./middleware/check-flight-url";
+import checkRequestQueries from "./middleware/check-request-queries";
 import preparePage from "./middleware/prepare-page";
 import checkDoingCaptcha from "./middleware/check-doing-captcha";
 
@@ -16,7 +16,7 @@ app.locals.headless = true;
 app.get(
   "/flights/",
   checkConnection,
-  checkFlightUrl,
+  checkRequestQueries,
   checkDoingCaptcha,
   preparePage,
   getFlights

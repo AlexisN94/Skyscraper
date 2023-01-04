@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import FlightCategory from "../enums/flight-category";
 import SkyscannerParser from "../services/parsers/skyscanner-parser";
 import Scraper from "../services/scraper";
 
-const checkFlightUrl = (req: Request, res: Response, next: NextFunction) => {
+const checkRequestQueries = (req: Request, res: Response, next: NextFunction) => {
   if (!req.query.url || typeof req.query.url !== "string") {
     //TODO validate email
     res.status(400).json({
@@ -13,6 +14,12 @@ const checkFlightUrl = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
+  const flightCategories = req.query.flightCategories 
+    ? JSON.parse(req.query.flightCategories as string) as FlightCategory[] 
+    : [FlightCategory.best, FlightCategory.cheapest, FlightCategory.fastest];
+
+  res.locals.flightCategories = flightCategories;
+
   res.locals.scraperConfig = {
     parser: new SkyscannerParser(),
     headless: req.app.locals.headless,
@@ -22,4 +29,4 @@ const checkFlightUrl = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default checkFlightUrl;
+export default checkRequestQueries;

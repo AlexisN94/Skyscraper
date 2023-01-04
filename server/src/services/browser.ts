@@ -19,7 +19,8 @@ class Browser {
 
     async loadPage(url) {
         this.browser = await puppeteer.launch({
-            headless: this.options.headless
+            headless: this.options.headless,
+            args: ["--no-sandbox", "--disable-setuid-sandbox"]
         });
         const page = await this.browser.newPage();
         await page.setUserAgent(userAgent.toString());

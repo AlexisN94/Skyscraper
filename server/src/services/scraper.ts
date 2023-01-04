@@ -59,6 +59,7 @@ class Scraper {
 
   async getFlightDetails(
     page: Page,
+    flightCategories: FlightCategory[],
     onSuccess: (data: ScrapedData) => void,
     onError: (error: Error) => void
   ) {
@@ -71,44 +72,20 @@ class Scraper {
         return;
       }
 
-      await this.parser.selectFlightCategory(page, FlightCategory.best);
-      [
-        data.bestFlight.price,
-        data.bestFlight.avgDuration,
-        data.bestFlight.outboundSegment,
-        data.bestFlight.inboundSegment,
-      ] = await Promise.all([
-        this.parser.getPrice(page, FlightCategory.best),
-        this.parser.getAvgDuration(page, FlightCategory.best),
-        this.parser.getSegmentDetails(page, SegmentDirection.outbound),
-        this.parser.getSegmentDetails(page, SegmentDirection.inbound),
-      ]);
-
-      await this.parser.selectFlightCategory(page, FlightCategory.cheapest);
-      [
-        data.cheapestFlight.price,
-        data.cheapestFlight.avgDuration,
-        data.cheapestFlight.outboundSegment,
-        data.cheapestFlight.inboundSegment,
-      ] = await Promise.all([
-        this.parser.getPrice(page, FlightCategory.cheapest),
-        this.parser.getAvgDuration(page, FlightCategory.cheapest),
-        this.parser.getSegmentDetails(page, SegmentDirection.outbound),
-        this.parser.getSegmentDetails(page, SegmentDirection.inbound),
-      ]);
-
-      await this.parser.selectFlightCategory(page, FlightCategory.fastest);
-      [
-        data.fastestFlight.price,
-        data.fastestFlight.avgDuration,
-        data.fastestFlight.outboundSegment,
-        data.fastestFlight.inboundSegment,
-      ] = await Promise.all([
-        this.parser.getPrice(page, FlightCategory.fastest),
-        this.parser.getAvgDuration(page, FlightCategory.fastest),
-        this.parser.getSegmentDetails(page, SegmentDirection.outbound),
-        this.parser.getSegmentDetails(page, SegmentDirection.inbound),
-      ]);
+      for(let flightCategory of flightCategories) {
+        await this.parser.selectFlightCategory(page, flightCategory);
+        [
+          data[`${flightCategory}Flight`].price, // e.g. data.bestFlight.price
+          data[`${flightCategory}Flight`].avgDuration,
+          data[`${flightCategory}Flight`].outboundSegment,
+          data[`${flightCategory}Flight`].inboundSegment,
+        ] = await Promise.all([
+          this.parser.getPrice(page, flightCategory),
+          this.parser.getAvgDuration(page, flightCategory),
+          this.parser.getSegmentDetails(page, SegmentDirection.outbound),
+          this.parser.getSegmentDetails(page, SegmentDirection.inbound),
+        ]);
+      }
 
       onSuccess(data);
       await this.terminate();

@@ -7,7 +7,7 @@ const getFlights = async (req: Request, res: Response) => {
   const scraper: Scraper = res.locals.scraper;
   const page: Page = res.locals.page;
 
-  await scraper.getFlightDetails(page, onSuccess(res), onError(res));
+  await scraper.getFlightDetails(page, res.locals.flightCategories, onSuccess(res), onError(res));
 };
 
 export default getFlights;

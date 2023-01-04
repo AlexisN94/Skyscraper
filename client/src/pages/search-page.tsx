@@ -15,6 +15,7 @@ import { WorkerPool } from 'utils/worker-pool';
 
 import SearchResults from 'components/ResultsPanel/index';
 import SearchForm from 'components/SearchForm/index';
+import FlightCategory from 'constants/flight-category';
 
 const SearchPage = () => {
    const [workerPool, setWorkerPool] = useState<WorkerPool<TicketModel>>(null);
@@ -25,6 +26,7 @@ const SearchPage = () => {
    const [searchParams, setSearchParams] = useState<FlightSearchParams>();
    const [searching, setSearching] = useState(false);
    const [doingCaptcha, setDoingCaptcha] = useState(false);
+   const [enabledFlightCategories, setEnabledFlightCategories] = useState<FlightCategory[]>([]);
 
    const playAudio = (pathToFile: string) => {
       audioPlayer.current.src = pathToFile;
@@ -57,6 +59,7 @@ const SearchPage = () => {
       setLoadedCount(0);
       setMaxResultsCount(dateRanges.length);
       setDoingCaptcha(false);
+      setEnabledFlightCategories(searchParams.flightCategories);
 
       dateRanges.forEach((dateRange: DateRange) => {
          const flightPlan: FlightPlan = {
@@ -73,7 +76,7 @@ const SearchPage = () => {
          }
 
          workerPool.enqueue({
-            args: [flightUrl, config.backendURL],
+            args: [flightUrl, config.backendURL, searchParams.flightCategories],
             onmessage: (flightDataResponse: FlightDataResponse, releaseWorker: () => void) => {
                if (flightDataResponse.doingCaptcha) {
                   if (!doingCaptcha) setDoingCaptcha(true);
@@ -133,6 +136,7 @@ const SearchPage = () => {
                   searching={searching}
                   doingCaptcha={doingCaptcha}
                   totalResultsCount={maxResultsCount}
+                  enabledFlightCategories={enabledFlightCategories}
                />
             </div>
          )}

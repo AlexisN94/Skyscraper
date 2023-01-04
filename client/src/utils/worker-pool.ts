@@ -83,10 +83,10 @@ export class WorkerPool<T> {
    private initWorkers() {
       this.workers = Array(this.poolSize)
          .fill(null)
-         .map((_) => {
-            const workee = new Worker(this.scriptURL);
-            workee['available'] = true;
-            return workee as PoolWorker;
+         .map((_, index) => {
+            const poolWorker = new Worker(this.scriptURL);
+            poolWorker['available'] = true;
+            return poolWorker as PoolWorker;
          });
    }
 }
