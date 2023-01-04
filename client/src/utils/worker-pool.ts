@@ -74,7 +74,7 @@ export class WorkerPool<T> {
          job.onmessage(event.data as T, () => this.releaseWorker(worker));
       };
       worker.onerror = (error: ErrorEvent) => {
-         worker.available = true;
+         this.releaseWorker(worker);
          job.onerror(error);
       };
       worker.postMessage([...job.args]);

@@ -46,6 +46,7 @@ export default () => {
          }
          if (!data.bestFlight || !data.cheapestFlight || !data.fastestFlight) {
             console.log('empty data on flightURL', flightURL, data);
+            data = null;
             await new Promise((res) => setTimeout(res, 500));
             continue;
          }
