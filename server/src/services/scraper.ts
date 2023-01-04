@@ -72,7 +72,7 @@ class Scraper {
         return;
       }
 
-      for(let flightCategory of flightCategories) {
+      for (let flightCategory of flightCategories) {
         await this.parser.selectFlightCategory(page, flightCategory);
         [
           data[`${flightCategory}Flight`].price, // e.g. data.bestFlight.price
@@ -88,15 +88,15 @@ class Scraper {
       }
 
       onSuccess(data);
-      await this.terminate();
     } catch (e) {
       onError(e);
     }
+    await this.terminate();
   }
 
   async waitForUserToSolveCaptcha(url: string) {
-    const page = await this.browser.loadPage(url);
     try {
+      const page = await this.browser.loadPage(url);
       await this.parser.startedCaptcha(page);
       await this.parser.completedCaptcha(page);
     } catch (e) {
@@ -105,7 +105,7 @@ class Scraper {
   }
 
   async terminate() {
-    this.browser.close();
+    this.browser?.close();
   }
 }
 

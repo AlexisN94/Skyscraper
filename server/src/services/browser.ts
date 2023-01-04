@@ -24,12 +24,12 @@ class Browser {
         });
         const page = await this.browser.newPage();
         await page.setUserAgent(userAgent.toString());
-        await page.goto(url);
+        await page.goto(url, { timeout: 60000 });
         return page;
     }
 
     close() {
-        this.browser.close();
+        this.browser?.close();
     }
 }
 
