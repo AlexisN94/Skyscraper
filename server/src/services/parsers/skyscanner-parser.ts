@@ -84,10 +84,14 @@ class SkyscannerParser implements Parser {
     page: Page,
     flightCategory: FlightCategory
   ): Promise<any> => {
-    await page.$eval(
-      this.selectors.flightCategoryButton[flightCategory],
-      (element) => (element as HTMLButtonElement).click()
-    );
+    await page.evaluate((categorySelector) => {
+      const categoryBtn = document.querySelector(categorySelector);
+      if (categoryBtn) {
+        (categoryBtn as HTMLButtonElement).click()
+      } else {
+        throw ("Failed to find elemenent with query: \"" + categorySelector + "\"")
+      }
+    }, this.selectors.flightCategoryButton[flightCategory]);
   };
 
   getSegmentDetails = async (
