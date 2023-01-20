@@ -1,5 +1,6 @@
 import { CircularProgress, LinearProgress } from '@mui/material';
 import FlightCategory from 'constants/flight-category';
+import { capitalize } from 'lodash';
 import FlightSearchParams from 'models/flight-search-params';
 import TicketModel from 'models/ticket-model';
 import React, { FC, useEffect, useState } from 'react';
@@ -8,9 +9,9 @@ import tailwindConfig from 'tailwind.config';
 import sortResults, { SortOption } from 'utils/sort-results';
 
 import ResultsList from 'components/ResultsList/index';
+import RemainingTime from 'components/RemainingTime/index';
 import AutoResizableSelect from 'components/ui/AutoResizableSelect';
 import Toggle from 'components/ui/Toggle';
-import { capitalize } from 'lodash';
 
 export type FlightResultsProps = {
    tickets: TicketModel[];
@@ -19,7 +20,7 @@ export type FlightResultsProps = {
    searchParams: FlightSearchParams;
    searching: boolean;
    doingCaptcha: boolean;
-   enabledFlightCategories: FlightCategory[]
+   enabledFlightCategories: FlightCategory[];
 };
 
 const ResultsPanel: FC<FlightResultsProps> = ({
@@ -48,22 +49,62 @@ const ResultsPanel: FC<FlightResultsProps> = ({
       setSortedTickets(sortResults(tickets, sortBy, sortAsc, activeFlightCategory));
    }, [tickets, sortBy, sortAsc, activeFlightCategory]);
 
+   const convertTicketsToCSV = () => {
+      let csv = 'origin,destination,departureDate,returnDate,oneWay,nights,noFlights,cheapestFlightPrice,bestFlightPrice,fastestFlightPrice,url\r\n';
+
+      sortedTickets.forEach(ticket => {
+         csv += `${ticket.origin},`;
+         csv += `${ticket.destination},`;
+         csv += `${ticket.departureDate.format('DD/MM/YYYY')},`;
+         csv += `${ticket.returnDate.format('DD/MM/YYYY')},`;
+         csv += `${ticket.oneWay},`;
+         csv += `${ticket.nights},`;
+         csv += `${ticket.noFlights},`;
+         csv += `${ticket.cheapestFlight?.price},`;
+         csv += `${ticket.bestFlight?.price},`;
+         csv += `${ticket.fastestFlight?.price},`;
+         csv += `${ticket.url}\r\n`;
+      });
+      return csv;
+   };
+
+   const exportToCSV = () => {
+      const firstTicket = tickets[0];
+      const csv = convertTicketsToCSV();
+
+      const hiddenElement = document.createElement('a');
+      hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+      hiddenElement.target = '_blank';
+      hiddenElement.download = `${firstTicket.origin}_${firstTicket.destination}__${firstTicket.departureDate.format("DD-MM-YY")}__${firstTicket.returnDate.format("DD-MM-YY")}${!searchParams.oneWay ? `__${searchParams.minNights}-${searchParams.maxNights}_nights` : ``}${searchParams.departWeekendsOnly ? "__departWeekendsOnly" : ''}${searchParams.returnWeekendsOnly ? "_returnWeekendsOnly" : ''}.csv`;
+      hiddenElement.click();
+   };
+
    return (
       <>
          <div className={`flex flex-col ${!searching && 'shadow-md'} z-10 bg-white`}>
             <div className="text-blue relative items-center px-6 py-5 flex justify-between font-bold text-sm">
-               <div className={`flex items-start gap-7 text-[0.8rem]`}>
-                  {searching && (
-                     <div className="flex gap-1 items-center">
-                        <CircularProgress size={17} thickness={7} />
-                        {doingCaptcha ? (
-                           <>Waiting for CAPTCHA...</>
-                        ) : (
-                           <>
-                              Loading... {loadedCount}/{totalResultsCount}
-                           </>
-                        )}
-                     </div>
+               <div className={`flex items-start gap-7 text-[0.8rem] flex-col lg:flex-row`}>
+                  {searching ? (
+                     <>
+                        <div className="flex gap-1 items-center">
+                           <CircularProgress size={17} thickness={7} />
+                           {doingCaptcha ? (
+                              <>Waiting for CAPTCHA...</>
+                           ) : (
+                              <>
+                                 Loading... {loadedCount}/{totalResultsCount}
+                              </>
+                           )}
+                        </div>
+                        <div className="flex">
+                           Estimated time:&nbsp;
+                           <RemainingTime loadedCount={loadedCount} totalCount={totalResultsCount} />
+                        </div>
+                     </>
+                  ) : (
+                     <button type="button" onClick={exportToCSV}>
+                        Export to CSV
+                     </button>
                   )}
                </div>
 
@@ -100,8 +141,10 @@ const ResultsPanel: FC<FlightResultsProps> = ({
                         className="no-select-arrow border-blue outline-blue cursor-pointer 
                         hover:outline outline-[0.5px] p-0.5 border rounded-xl focus:outline-none px-1.5"
                      >
-                        {enabledFlightCategories.map(category => (
-                           <option value={category}>{capitalize(category)}</option>
+                        {enabledFlightCategories.map((category) => (
+                           <option value={category} selected={category === activeFlightCategory}>
+                              {capitalize(category)}
+                           </option>
                         ))}
                      </AutoResizableSelect>
                   </label>
