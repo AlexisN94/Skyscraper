@@ -25,7 +25,7 @@ For example, if you want to travel between 1/Aug and 8/Aug and want to stay betw
   1/Aug - 8/Aug (7 nights)
 </pre>
 
-You can sort the results by price (default), average flight duration, stay duration, departure date and return date.
+You can sort the results by price (default), average flight duration, stay duration, departure date, return date, number of stops and number of different airlines.
 
 You might be occasionally prompted by Skyscanner to complete CAPTCHAs.
 
@@ -149,5 +149,5 @@ Make sure you have <a href="https://nodejs.org/en/">Node.js</a> installed first.
 - Form validation
 - Backend caching
 - Responsive design
-- Save results to file
-- Snackbar
+- Notifications / snackbar
+- Pause/continue
