@@ -5,8 +5,9 @@ import TicketModel from 'models/ticket-model';
 import React, { FC } from 'react';
 import { MdLaunch } from 'react-icons/md';
 import tailwindConfig from 'tailwind.config';
-
 import Ticket from 'components/Ticket/index';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import { FixedSizeList as List } from 'react-window';
 
 type Props = {
    oneWay: boolean;
@@ -99,16 +100,32 @@ const ResultsList: FC<Props> = ({ oneWay, tickets, compact, activeFlightCategory
                className={`text-dark-blue h-full px-16 flex flex-col gap-4 py-4 font-bold text-center overflow-y-scroll`}
             >
                {tickets.length > 0 &&
-                  tickets.map((ticket) => (
-                     <Ticket
-                        {...ticket}
-                        key={ticket.url}
-                        activeFlightCategory={activeFlightCategory}
-                        className={`text-dark-blue`}
-                     />
-                  ))}
+                  <AutoSizer>
+                     {({ height, width }) => (
+                        <List
+                           height={height}
+                           className={"no-scrollbar"}
+                           width={width}
+                           itemSize={180}
+                           itemCount={tickets.length}
+                        >
+                           {({ _, index, style }) => (
+                              <div style={style}>
+                                 <Ticket
+                                    {...tickets[index]}
+                                    key={tickets[index].url}
+                                    activeFlightCategory={activeFlightCategory}
+                                    className={`text-dark-blue`}
+                                 />
+                              </div>
+                           )}
+                        </List>
+                     )}
+                  </AutoSizer>
+               }
             </div>
-         )}
+         )
+         }
       </>
    );
 };
