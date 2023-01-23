@@ -1,10 +1,11 @@
 import moment, { Moment, Duration } from 'moment';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-const RemainingTime = ({ loadedCount, totalCount }) => {
+const RemainingTime = ({ loadedCount, totalCount, paused }) => {
    const startTime = useMemo<Moment>(() => moment(), []);
    const [durationSinceStart, setDurationSinceStart] = useState<Duration>(moment.duration(0));
    const [remainingTime, setRemainingTime] = useState<Duration>(null);
+   const interval = useRef<NodeJS.Timer>();
 
    useEffect(() => {
       if (loadedCount === 0) return;
@@ -14,14 +15,18 @@ const RemainingTime = ({ loadedCount, totalCount }) => {
    }, [loadedCount]);
 
    useEffect(() => {
-      const interval = setInterval(() => {
+      if (paused) {
+         clearInterval(interval.current);
+         return;
+      }
+      interval.current = setInterval(() => {
          const durationSinceStart = moment.duration(moment().diff(startTime));
          setDurationSinceStart(durationSinceStart);
       }, 1000);
       return () => {
-         clearInterval(interval);
+         clearInterval(interval.current);
       };
-   }, []);
+   }, [paused]);
 
    if (!remainingTime) return null;
 

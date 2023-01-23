@@ -16,14 +16,17 @@ import rangeSliderStyle from 'components/RangeSlider/style';
 
 import SearchButton from '../SearchButton';
 import './style.css';
+import EventEmitter from 'events';
 
 export type Props = {
    searching: boolean;
    onSearch: (searchParams: FlightSearchParams) => void;
    onForceStop: () => void;
+   eventEmitter: EventEmitter
+   onPauseContinueToggle: (isPaused: boolean) => void;
 };
 
-const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
+const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop, eventEmitter, onPauseContinueToggle }) => {
    const [oneWay, setOneWay] = useQueryState('oneWay', false);
    const [departWeekendsOnly, setDepartWeekendsOnly] = useQueryState('departWeekendsOnly', false);
    const [returnWeekendsOnly, setReturnWeekendsOnly] = useQueryState('returnWeekendsOnly', false);
@@ -39,6 +42,19 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
       'flightCategories',
       [FlightCategory.best, FlightCategory.fastest, FlightCategory.cheapest]
    );
+   const [paused, setPaused] = useState(false);
+
+   const toggleRunningStatus = () => {
+      setPaused(state => {
+         onPauseContinueToggle(!state);
+         return !state;
+      });
+   };
+
+   useEffect(() => {
+      eventEmitter.on("pause", () => setPaused(true));
+      eventEmitter.on("continue", () => setPaused(false));
+   }, []);
 
    useEffect(() => {
       if (oneWay) {
@@ -209,7 +225,7 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
          <div className={`flex w-full align-middle items-center h-full justify-between gap-5`}>
             <fieldset className="grid grid-cols-2 gap-x-2 gap-y-1 w-full max-w-[250px]">
                {Object.entries(FlightCategory).map((flightCategory) => (
-                  <label className="flex align-middle gap-1">
+                  <label key={flightCategory[1]} className="flex align-middle gap-1">
                      <input
                         type="checkbox"
                         checked={flightCategories.includes(flightCategory[1])}
@@ -227,9 +243,8 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
                subtitle={
                   minNights === maxNights
                      ? `${minNights} night${minNights !== 1 && 's'}`
-                     : `At least ${minNights} night${
-                          minNights !== 1 && 's'
-                       }, at most ${maxNights} night${maxNights !== 1 && 's'}`
+                     : `At least ${minNights} night${minNights !== 1 && 's'
+                     }, at most ${maxNights} night${maxNights !== 1 && 's'}`
                }
                min={0}
                unit="night"
@@ -246,11 +261,16 @@ const SearchForm: FC<Props> = ({ searching, onSearch, onForceStop }) => {
                sx={rangeSliderStyle}
             />
 
-            <SearchButton
-               searching={searching}
-               type="submit"
-               className={`text-base bg-blue w-full justify-center lg:w-auto flex items-center py-2 h-fit px-8 whitespace-nowrap rounded-sm`}
-            />
+            <div className='flex gap-4'>
+               {searching &&
+                  <button className='w-[60px]' type='button' onClick={_ => toggleRunningStatus()}>{paused ? "Continue" : "Pause"}</button>
+               }
+               <SearchButton
+                  searching={searching}
+                  type="submit"
+                  className={`bg-blue text-base w-full justify-center lg:w-auto flex items-center py-2 h-fit px-8 whitespace-nowrap rounded-sm`}
+               /></div>
+
          </div>
 
          <div className="-mt-0.5 text-xs italic tracking-tighter text-center font-medium text-gray-400">

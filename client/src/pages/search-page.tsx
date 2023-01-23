@@ -16,6 +16,7 @@ import { WorkerPool } from 'utils/worker-pool';
 import SearchResults from 'components/ResultsPanel/index';
 import SearchForm from 'components/SearchForm/index';
 import FlightCategory from 'constants/flight-category';
+import EventEmitter from 'events';
 
 const SearchPage = () => {
    const [workerPool, setWorkerPool] = useState<WorkerPool<TicketModel>>(null);
@@ -27,6 +28,8 @@ const SearchPage = () => {
    const [searching, setSearching] = useState(false);
    const [doingCaptcha, setDoingCaptcha] = useState(false);
    const [enabledFlightCategories, setEnabledFlightCategories] = useState<FlightCategory[]>([]);
+   const eventEmitter = useRef(new EventEmitter);
+   const [paused, setPaused] = useState(false);
 
    const playAudio = (pathToFile: string) => {
       audioPlayer.current.src = pathToFile;
@@ -95,7 +98,11 @@ const SearchPage = () => {
                releaseWorker();
             },
             onerror: (error: ErrorEvent) => {
-               handleSearchEnd(error?.message ?? config.errorMessages.api.genericError);
+               debouncePlayAudio(config.audioSrc.error);
+               workerPool.pause();
+               eventEmitter.current.emit("pause");
+               setPaused(true);
+               console.log(error);
             },
          });
       });
@@ -118,6 +125,12 @@ const SearchPage = () => {
       debouncePlayAudio(audio);
    };
 
+   const handlePauseContinueToggle = (isPaused: boolean) => {
+      setPaused(isPaused);
+      if (isPaused) workerPool.pause();
+      else workerPool.continue();
+   };
+
    return (
       <div className="2xl:max-w-[55%] xl:max-w-[65%] md:max-w-[75%] max-w-[90%] min-w-[634px] w-full h-full py-4 justify-center gap-6 flex flex-col">
          <audio ref={audioPlayer} />
@@ -125,6 +138,8 @@ const SearchPage = () => {
             searching={searching}
             onSearch={handleSearch}
             onForceStop={handleSearchCancel}
+            eventEmitter={eventEmitter.current}
+            onPauseContinueToggle={handlePauseContinueToggle}
          />
 
          {(searching || searchResults.length > 0) && (
@@ -134,6 +149,7 @@ const SearchPage = () => {
                   loadedCount={loadedCount}
                   searchParams={searchParams}
                   searching={searching}
+                  paused={paused}
                   doingCaptcha={doingCaptcha}
                   totalResultsCount={maxResultsCount}
                   enabledFlightCategories={enabledFlightCategories}

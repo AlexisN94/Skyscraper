@@ -19,6 +19,7 @@ export type FlightResultsProps = {
    totalResultsCount: number;
    searchParams: FlightSearchParams;
    searching: boolean;
+   paused: boolean;
    doingCaptcha: boolean;
    enabledFlightCategories: FlightCategory[];
 };
@@ -29,6 +30,7 @@ const ResultsPanel: FC<FlightResultsProps> = ({
    totalResultsCount,
    searchParams,
    searching,
+   paused,
    doingCaptcha,
    enabledFlightCategories,
 }) => {
@@ -38,6 +40,7 @@ const ResultsPanel: FC<FlightResultsProps> = ({
    const [sortedTickets, setSortedTickets] = useState(tickets);
    const [compactView, setCompactView] = useState(false);
    const [activeFlightCategory, setActiveFlightCategory] = useState(FlightCategory.cheapest);
+   const [statusMessage, setStatusMessage] = useState("");
 
    useEffect(() => {
       if (totalResultsCount === 0) return;
@@ -68,6 +71,18 @@ const ResultsPanel: FC<FlightResultsProps> = ({
       return csv;
    };
 
+   useEffect(() => {
+      if (doingCaptcha) setStatusMessage("Waiting for CAPTCHA...");
+      else if (searching) {
+         const progress = `${loadedCount}/${totalResultsCount}`;
+         if (paused) {
+            setStatusMessage(`Paused (${progress})`);
+            return;
+         }
+         setStatusMessage(`Loading... ${progress}`);
+      }
+   }, [doingCaptcha, searching, paused, loadedCount, totalResultsCount]);
+
    const exportToCSV = () => {
       const firstTicket = tickets[0];
       const csv = convertTicketsToCSV();
@@ -83,29 +98,21 @@ const ResultsPanel: FC<FlightResultsProps> = ({
       <>
          <div className={`flex flex-col ${!searching && 'shadow-md'} z-10 bg-white`}>
             <div className="text-blue relative items-center px-6 py-5 flex justify-between font-bold text-sm">
-               <div className={`flex items-start gap-7 text-[0.8rem] flex-col lg:flex-row`}>
-                  {searching ? (
-                     <>
-                        <div className="flex gap-1 items-center">
-                           <CircularProgress size={17} thickness={7} />
-                           {doingCaptcha ? (
-                              <>Waiting for CAPTCHA...</>
-                           ) : (
-                              <>
-                                 Loading... {loadedCount}/{totalResultsCount}
-                              </>
-                           )}
-                        </div>
-                        <div className="flex">
-                           Estimated time:&nbsp;
-                           <RemainingTime loadedCount={loadedCount} totalCount={totalResultsCount} />
-                        </div>
-                     </>
-                  ) : (
+               <div className={`flex items-start gap-4 text-[0.8rem] flex-col lg:flex-row`}>
+                  <div className="align-middle flex items-start gap-2 flex-wrap lg:flex-nowrap">
+                     {searching && !paused && <CircularProgress size={17} thickness={7} />}
+                     <div>{statusMessage}</div>
+                  </div>
+                  {searching ?
+                     <div className="flex">
+                        Estimated time:&nbsp;
+                        <RemainingTime paused={paused || doingCaptcha} loadedCount={loadedCount} totalCount={totalResultsCount} />
+                     </div>
+                     :
                      <button type="button" onClick={exportToCSV}>
                         Export to CSV
                      </button>
-                  )}
+                  }
                </div>
 
                <div className="absolute whitespace-nowrap left-1/2 -translate-x-1/2">

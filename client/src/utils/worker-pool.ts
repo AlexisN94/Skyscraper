@@ -6,6 +6,7 @@ export type Job<T> = {
 
 export type PoolWorker = Worker & {
    available: boolean;
+   id: number;
 };
 
 export class WorkerPool<T> {
@@ -32,12 +33,21 @@ export class WorkerPool<T> {
          const worker = this.getAvailableWorker();
          if (worker && this.jobQueue.length > 0 && !this.stopRequested) {
             this.employWorker(worker, this.jobQueue.shift());
+            console.log(`Worker employed (ID: ${worker.id})`);
          }
       }, 500);
    }
 
    enqueue(job: Job<T>) {
       this.jobQueue.push(job);
+   }
+
+   pause() {
+      clearInterval(this.interval);
+   }
+
+   continue() {
+      this.start();
    }
 
    immediatelyStopAndReset() {
@@ -84,9 +94,10 @@ export class WorkerPool<T> {
       this.workers = Array(this.poolSize)
          .fill(null)
          .map((_, index) => {
-            const poolWorker = new Worker(this.scriptURL);
-            poolWorker['available'] = true;
-            return poolWorker as PoolWorker;
+            const poolWorker = new Worker(this.scriptURL) as PoolWorker;
+            poolWorker.available = true;
+            poolWorker.id = index + 1;
+            return poolWorker;
          });
    }
 }
