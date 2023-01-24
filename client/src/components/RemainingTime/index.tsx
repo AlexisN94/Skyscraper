@@ -6,6 +6,7 @@ const RemainingTime = ({ loadedCount, totalCount, paused }) => {
    const [durationSinceStart, setDurationSinceStart] = useState<Duration>(moment.duration(0));
    const [remainingTime, setRemainingTime] = useState<Duration>(null);
    const interval = useRef<NodeJS.Timer>();
+   const [pauseStart, setPauseStart] = useState(null);
 
    useEffect(() => {
       if (loadedCount === 0) return;
@@ -17,7 +18,13 @@ const RemainingTime = ({ loadedCount, totalCount, paused }) => {
    useEffect(() => {
       if (paused) {
          clearInterval(interval.current);
+         setPauseStart(moment());
          return;
+      }
+      if (pauseStart) {
+         const pauseEnd = moment();
+         startTime.add(pauseEnd.diff(pauseStart));
+         setPauseStart(null);
       }
       interval.current = setInterval(() => {
          const durationSinceStart = moment.duration(moment().diff(startTime));

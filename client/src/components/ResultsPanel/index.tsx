@@ -80,6 +80,8 @@ const ResultsPanel: FC<FlightResultsProps> = ({
             return;
          }
          setStatusMessage(`Loading... ${progress}`);
+      } else {
+         setStatusMessage(null);
       }
    }, [doingCaptcha, searching, paused, loadedCount, totalResultsCount]);
 
@@ -101,7 +103,7 @@ const ResultsPanel: FC<FlightResultsProps> = ({
                <div className={`flex items-start gap-4 text-[0.8rem] flex-col lg:flex-row`}>
                   <div className="align-middle flex items-start gap-2 flex-wrap lg:flex-nowrap">
                      {searching && !paused && <CircularProgress size={17} thickness={7} />}
-                     <div>{statusMessage}</div>
+                     {!!statusMessage && <div>{statusMessage}</div>}
                   </div>
                   {searching ?
                      <div className="flex">
