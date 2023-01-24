@@ -86,13 +86,12 @@ const ResultsPanel: FC<FlightResultsProps> = ({
    }, [doingCaptcha, searching, paused, loadedCount, totalResultsCount]);
 
    const exportToCSV = () => {
-      const firstTicket = tickets[0];
       const csv = convertTicketsToCSV();
 
       const hiddenElement = document.createElement('a');
       hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
       hiddenElement.target = '_blank';
-      hiddenElement.download = `${firstTicket.origin}_${firstTicket.destination}__${firstTicket.departureDate.format("DD-MM-YY")}__${firstTicket.returnDate.format("DD-MM-YY")}${!searchParams.oneWay ? `__${searchParams.minNights}-${searchParams.maxNights}_nights` : ``}${searchParams.departWeekendsOnly ? "__departWeekendsOnly" : ''}${searchParams.returnWeekendsOnly ? "_returnWeekendsOnly" : ''}.csv`;
+      hiddenElement.download = `${searchParams.origin}_${searchParams.destination}__${searchParams.departureDate.format("DD-MM-YY")}__${searchParams.returnDate.format("DD-MM-YY")}${!searchParams.oneWay ? `__${searchParams.minNights}-${searchParams.maxNights}_nights` : ``}${searchParams.departWeekendsOnly ? "__departWeekendsOnly" : ''}${searchParams.returnWeekendsOnly ? "_returnWeekendsOnly" : ''}.csv`;
       hiddenElement.click();
    };
 
