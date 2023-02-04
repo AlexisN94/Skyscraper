@@ -39,13 +39,13 @@ const RemainingTime = ({ loadedCount, totalCount, paused }) => {
 
    return (
       <div>
-         {remainingTime.asMilliseconds() >= 1000
-            ? <>
+         {remainingTime.asMilliseconds() >= 60000 ?
+            <>
                {remainingTime.days() > 0 && <span>{remainingTime.days()}d</span>}
                {remainingTime.hours() > 0 && <span>{remainingTime.hours()}h</span>}
                {remainingTime.minutes() > 0 && <span>{remainingTime.minutes()}m</span>}
             </> : <>
-               {'<1m'}
+               {"< 1m"}
             </>
          }
       </div>
