@@ -106,7 +106,7 @@ const ResultsList: FC<Props> = ({ oneWay, tickets, compact, activeFlightCategory
                            height={height}
                            className={"no-scrollbar"}
                            width={width}
-                           itemSize={200}
+                           itemSize={192}
                            itemCount={tickets.length}
                         >
                            {({ _, index, style }) => (
@@ -115,7 +115,7 @@ const ResultsList: FC<Props> = ({ oneWay, tickets, compact, activeFlightCategory
                                     {...tickets[index]}
                                     key={tickets[index].url}
                                     activeFlightCategory={activeFlightCategory}
-                                    className={`text-dark-blue`}
+                                    className={`text-dark-blue h-[180px]`}
                                  />
                               </div>
                            )}
