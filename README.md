@@ -123,25 +123,25 @@ Make sure you have <a href="https://nodejs.org/en/">Node.js</a> installed first.
 
 #### Unix:
 
-- Run <ins>install.sh</ins>
+- Run <ins>install.sh</ins>. This will temporarily open two Terminal windows.
 
 #### Windows:
 
-- Run <ins>install.bat</ins>
+- Run <ins>install.bat</ins>. This will temporarily open two Command Prompt windows.
 
 ## To run
 
 #### Unix:
 
-1. Run <ins>start.sh</ins>
+1. Run <ins>start.sh</ins>. This will open two Terminal windows.
 2. Open http://localhost:3000/
-3. When you're done, open the Terminal windows that launched when you ran start.sh, then press CTRL+C
+3. When you're done, go to each of the Terminal windows, then press `Control^ + C` to terminate.
 
 #### Windows:
 
-1. Run <ins>start.bat</ins>
+1. Run <ins>start.bat</ins>. This will open two Command Prompt windows.
 2. Open http://localhost:3000/
-3. When you're done, go to the Command Prompt windows that opened when you ran start.bat, then press CTRL+C (just closing the Command Prompt windows isn't enough)
+3. When you're done, go to each of the Command Prompt windows, then press `Ctrl + C` (you might need to press twice on one of the windows)
 
 ## TODO
 
@@ -149,5 +149,3 @@ Make sure you have <a href="https://nodejs.org/en/">Node.js</a> installed first.
 - Form validation
 - Backend caching
 - Responsive design
-- Notifications / snackbar
-- Pause/continue
