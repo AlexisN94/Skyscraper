@@ -17,6 +17,7 @@ import SearchResults from 'components/ResultsPanel/index';
 import SearchForm from 'components/SearchForm/index';
 import FlightCategory from 'constants/flight-category';
 import EventEmitter from 'events';
+import { notification } from 'antd';
 
 const SearchPage = () => {
    const [workerPool, setWorkerPool] = useState<WorkerPool<TicketModel>>(null);
@@ -37,7 +38,7 @@ const SearchPage = () => {
    };
 
    const debouncePlayAudio = useCallback(
-      _.debounce((audioFile) => playAudio(audioFile), 1000),
+      _.throttle((audioFile) => playAudio(audioFile), 1000, { trailing: false }),
       []
    );
 
@@ -52,6 +53,13 @@ const SearchPage = () => {
    useEffect(() => {
       if (doingCaptcha) playAudio(config.audioSrc.warning);
    }, [doingCaptcha]);
+
+   const openNotification = useCallback(
+      _.throttle((message, description = undefined) =>
+         notification.open({ message, description, placement: 'bottomRight' })
+         , 5000,
+         { trailing: false }),
+      []);
 
    const handleSearch = (searchParams: FlightSearchParams) => {
       const dateRanges = getDateRanges(searchParams);
@@ -101,8 +109,10 @@ const SearchPage = () => {
                debouncePlayAudio(config.audioSrc.error);
                workerPool.pause();
                eventEmitter.current.emit("pause");
-               setPaused(true);
+               if (searchResults.length > 0) setPaused(true);
+               else handleSearchEnd();
                console.log(error);
+               openNotification("Search failed", error.message.replace("Uncaught Error: ", ""));
             },
          });
       });
@@ -121,6 +131,8 @@ const SearchPage = () => {
       if (errorMessage) {
          audio = config.audioSrc.error;
          console.log(errorMessage);
+      } else {
+         openNotification("Search complete");
       }
       debouncePlayAudio(audio);
    };

@@ -7,7 +7,7 @@ export default () => {
    }
 
    async function tryGetFlights(flightURL, backendURL, flightCategories, triesLeft) {
-      if (triesLeft === 0) throwError('Server error. Make sure it is running.');
+      if (triesLeft === 0) throwError('Is the backend server running?');
       try {
          const requestURL =
             `${backendURL}flights/` +
@@ -45,7 +45,7 @@ export default () => {
             continue;
          }
          if (data?.noInternet) {
-            throwError('No internet connection.');
+            throwError('No internet connection');
             return;
          }
          if (!data.bestFlight || !data.cheapestFlight || !data.fastestFlight) {
