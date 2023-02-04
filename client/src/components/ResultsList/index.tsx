@@ -97,7 +97,7 @@ const ResultsList: FC<Props> = ({ oneWay, tickets, compact, activeFlightCategory
             </div>
          ) : (
             <div
-               className={`text-dark-blue h-full px-16 flex flex-col gap-4 py-4 font-bold text-center overflow-y-scroll`}
+               className={`text-dark-blue h-full px-14 flex flex-col gap-4 py-4 font-bold text-center overflow-y-scroll`}
             >
                {tickets.length > 0 &&
                   <AutoSizer>
@@ -106,11 +106,11 @@ const ResultsList: FC<Props> = ({ oneWay, tickets, compact, activeFlightCategory
                            height={height}
                            className={"no-scrollbar"}
                            width={width}
-                           itemSize={180}
+                           itemSize={200}
                            itemCount={tickets.length}
                         >
                            {({ _, index, style }) => (
-                              <div style={style}>
+                              <div style={Object.assign({ padding: "0px 15px" }, style)}>
                                  <Ticket
                                     {...tickets[index]}
                                     key={tickets[index].url}
